@@ -1,0 +1,2 @@
+description:one_jackal:robot_setup_tf:robot_state_publisher:test
+-DCATKIN_DEVEL_PREFIX=/home/ruohan/rendezvous/devel -DCMAKE_INSTALL_PREFIX=/home/ruohan/rendezvous/install -G Unix Makefiles
