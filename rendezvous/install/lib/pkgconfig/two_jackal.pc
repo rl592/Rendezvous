@@ -1,0 +1,8 @@
+prefix=/home/ruohan/rendezvous/install
+
+Name: two_jackal
+Description: Description of two_jackal
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

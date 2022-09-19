@@ -1,0 +1,127 @@
+<launch>
+
+    <arg name="node_start_delay" default="2.0" /> 
+    <param name="use_sim_time" value="true"/>
+    <arg name="map" default="square" />
+
+
+    <arg name="config" default="3" />
+    <!-- <arg name="strategy" default="avarage edge length" /> -->
+    <arg name="strategy" default="3" />
+
+    <include file="$(find test)/launch/jackal_race.launch">
+     <arg name="map_name" value="$(arg map)"/>
+     </include>
+
+    <!-- Jackal Race -->
+    <!-- config1 -->
+    <!-- <arg name="j1initX" default="0" />
+    <arg name="j1initY" default="-4" />
+    <arg name="j2initX" default="8" />
+    <arg name="j2initY" default="-9" />     -->
+    <!-- config2 -->
+    <!-- <arg name="j1initX" default="8" />
+    <arg name="j1initY" default="-9" />
+    <arg name="j2initX" default="0" />
+    <arg name="j2initY" default="-4" />     -->
+
+    <!-- Square map -->
+    <!-- config1 -->
+    <!-- <arg name="j1initX" default="-4.5" />
+    <arg name="j1initY" default="4" />
+    <arg name="j2initX" default="3.5" />
+    <arg name="j2initY" default="-8.5" /> -->
+    <!-- config2 -->
+    <!-- <arg name="j1initX" default="6" />
+    <arg name="j1initY" default="1" />
+    <arg name="j2initX" default="-5" />
+    <arg name="j2initY" default="-5" /> -->
+    <!-- config3 -->
+    <arg name="j1initX" default="4" />
+    <arg name="j1initY" default="-8.5" />
+    <arg name="j2initX" default="-4" />
+    <arg name="j2initY" default="6.5" />  
+
+
+    
+
+    <!-- upson map -->
+    <!-- <arg name="j1initX" default="1" />
+    <arg name="j1initY" default="7" />
+    <arg name="j2initX" default="4" />
+    <arg name="j2initY" default="-7" /> -->
+    
+    <!-- <arg name="j2initX" default="1" />
+    <arg name="j2initY" default="7" />
+    <arg name="j1initX" default="4" />
+    <arg name="j1initY" default="-7" /> -->
+
+
+    <group ns="j1">     
+        <include file="$(find test)/launch/one.launch" >
+            <arg name="namespace" value="j1" />
+            <arg name="initX" value="$(arg j1initX)" />
+            <arg name="initY" value="$(arg j1initY)" />
+            <arg name="initYaw" value="0" />
+            <arg name="jackal_name" value="j1"/>
+        </include>
+        <include file="$(find test)/launch/gmapping.launch">
+            <arg name="jackal_name" value="j1"/>
+        </include>
+        <include file="$(find test)/launch/move_base.launch">
+            <arg name="jackal_name" value="j1"/>
+        </include>
+    </group>
+
+    <group ns="j2">     
+        <include file="$(find test)/launch/one.launch" >
+            <arg name="namespace" value="j2" />
+            <arg name="initX" value="$(arg j2initX)" />
+            <arg name="initY" value="$(arg j2initY)" />
+            <arg name="initYaw" value="0" />
+            <arg name="jackal_name" value="j2"/>
+        </include>
+        <include file="$(find test)/launch/gmapping.launch">
+            <arg name="jackal_name" value="j2"/>
+        </include>
+        <include file="$(find test)/launch/move_base.launch">
+            <arg name="jackal_name" value="j2"/>
+        </include>
+    </group>
+
+
+    <arg name="rvizconfig" default="$(find test)/config/multi_jackal.rviz" />    
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+
+    <node pkg="tf" type="static_transform_publisher" name="world_to_j1_tf_broadcaster" args="$(arg j1initX) $(arg j1initY) 0 0 0 0 /world /j1/map 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="world_to_j2_tf_broadcaster" args="$(arg j2initX) $(arg j2initY) 0 0 0 0 /world /j2/map 100"/>
+
+
+
+    <!-- <group ns="j2">
+    <node pkg="one_jackal" type="move_seq.py" name="move_base_sequence" output="screen">
+        <param name="robot_name" value="j2"/>
+    </node>  
+
+    <node pkg="one_jackal" type="graph_generator_node" name="graph_generator_node" output="screen" required="true">
+        <param name="robot_name" value="j2"/>
+    </node> 
+
+
+    <node pkg="one_jackal" type="decision.py" name="decision" output="screen" required="true">
+        <param name="robot_name" value="j2"/>         
+        <param name="j2x" value="$(arg j2initX)"/>
+        <param name="j2y" value="$(arg j2initY)"/>
+        <param name="j1x" value="$(arg j1initX)"/>
+        <param name="j1y" value="$(arg j1initY)"/>
+
+        <param name="map" value="$(arg map)"/>
+        <param name="config" value="$(arg config)"/>
+        <param name="strategy" value="$(arg strategy)"/>
+
+    </node>         
+    </group> -->
+
+
+</launch>

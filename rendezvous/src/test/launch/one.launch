@@ -1,0 +1,54 @@
+<launch>
+  <arg name="namespace" default="j1" />
+  <arg name="tfpre" default="$(arg namespace)" />
+  <arg name="initX" default="0" />
+  <arg name="initY" default="0" />
+  <arg name="initYaw" default="0" />
+
+
+  <arg name="jackal_name" default="j1"/>     
+  <arg name="env_runner" value="$(eval 'env_run' if not optenv('OS', 'unknown').lower().startswith('windows') else 'env_run.bat')" />
+    
+
+  <param name="robot_description" 
+         command="$(find jackal_description)/scripts/$(arg env_runner)
+                    $(find description)/urdf/configs/front_laser
+                    $(find xacro)/xacro $(find description)/urdf/jackal.urdf.xacro
+                    robot_namespace:=$(arg namespace)
+                    tfpre:=$(arg tfpre)
+                    nsp:=$(arg namespace)
+                    " />    
+    
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-x $(arg initX) -y $(arg initY) -Y $(arg initYaw) -unpause -urdf -param robot_description 
+  -model Jackal_$(arg namespace)"/>
+       
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+  <param name="tf_prefix" value="$(arg namespace)/" />
+  </node>
+
+  <!-- <rosparam file="$(find test)/config/gazebo_ros_control_params.yaml" command="load"/> -->
+  <rosparam command="load" file="$(find jackal_control)/config/control.yaml"/>
+  <rosparam param="jackal_velocity_controller/base_frame_id" subst_value="True">$(arg tfpre)/base_link</rosparam>
+  <node name="base_controller_spawner" pkg="controller_manager" type="spawner" 
+      args="jackal_joint_publisher jackal_velocity_controller"/>
+
+  
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+    <rosparam command="load" file="$(find test)/config/ekf_$(arg namespace).yaml"/>
+    <param name="map_frame"       value="map"/>
+  </node>    
+
+
+
+  <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server" output="screen">
+   <param name="link_name" value="$(arg tfpre)/base_link" />
+  </node>   
+    
+  <node pkg="twist_mux" type="twist_mux" name="twist_mux">
+    <rosparam command="load" file="$(find jackal_control)/config/twist_mux.yaml" />
+    <remap from="cmd_vel_out" to="jackal_velocity_controller/cmd_vel"/>
+  </node> 
+    
+
+</launch>
