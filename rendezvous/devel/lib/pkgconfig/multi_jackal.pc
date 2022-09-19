@@ -1,8 +1,0 @@
-prefix=/home/ruohan/rendezvous/devel
-
-Name: multi_jackal
-Description: Description of multi_jackal
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
